@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    <title>스파르타코딩클럽 | 부트스트랩 연습하기</title>
+
+    <meta property="og:title" content="원페이지 쇼핑몰"/>
+    <meta property="og:description" content="내가 만든 첫 웹서비스"/>
+    <meta property="og:image" content="{{ url_for('static', filename='ogimage2.jpg') }}"/>
+
+    <style>
+        .size {
+            width: 500px;
+            margin: auto;
+            display: block;
+        }
+        .input_pad{
+            padding: 10px;
+        }
+        .button_display{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .wrap{
+            width: 500px;
+            margin: auto;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            get_rate();
+            listing();
+        });
+
+        function get_rate() {
+            $.ajax({
+                type: "GET",
+                url: "http://spartacodingclub.shop/sparta_api/rate",
+                data: {},
+                success: function (response) {
+                    let current_rate = response["rate"];
+                    $('#current_rate').text(current_rate);
+                }
+            })
+        }
+        function order(){
+            let size = $('#order-size').val()
+            let name = $('#order-name').val()
+            let address = $('#order-address').val()
+            let phone = $('#order-phone').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/order",
+                data: {size_give: size, name_give: name, address_give: address, phone_give: phone},
+                success: function (response) {
+                    alert(response["msg"]);
+                    window.location.reload();
+                }
+            })
+        }
+
+
+          function listing() {
+                $.ajax({
+                    type: "GET",
+                    url: "/order",
+                    data: {},
+                    success: function (response) {
+                        let orders = response['orders']
+                        for (let i =0; i< orders.length; i++){
+                            let size = orders[i]['size']
+                            let name = orders[i]['name']
+                            let address = orders[i]['address']
+                            let phone = orders[i]['phone']
+
+                            let temp_html = `<tr>
+                                                <th scope="row">${size}</th>
+                                                <td>${name}</td>
+                                                <td>${address}</td>
+                                                <td>${phone}</td>
+                                            </tr>`
+                            $('#orders-box').append(temp_html)
+                        }
+                    }
+                })
+            }
+    </script>
+</head>
+
+<body>
+<div class="wrap">
+    <div class="card mb-3 size">
+        <img class="card-img-top"
+             src="https://images.complex.com/complex/images/c_scale,f_auto,q_auto,w_1920/fl_lossy,pg_1/iot1dbjmzr7z6kfkoxrb/nike-air-force-1-lead-1?fimg-ssr-default"
+             alt="Card image cap">
+    </div>
+
+    <div class="card-body size">
+        <h4 class="card-title">Nike Air Force 1 판매 <span style="font-size: 13px"> 가격: 129,000원/개</span></h4>
+        <p class="card-text">From high-top to low-top. Live the legend of the Air Force 1, modernized for ultimate street
+            style. </p>
+        <p><span style="color:blue">달러-원 환율: <span id="current_rate"></span></span></p>
+    </div>
+
+    <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">사이즈</label>
+            </div>
+            <select id="order-size" class="custom-select">
+                <option selected>-- 사이즈를 선택하세요 --</option>
+                <option>"230"</option>
+                <option>"235"</option>
+                <option>"240"</option>
+                <option>"245"</option>
+                <option>"250"</option>
+                <option>"255"</option>
+                <option>"260"</option>
+                <option>"265"</option>
+                <option>"270"</option>
+                <option>"275"</option>
+
+            </select>
+        </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-default">구매자 성함</span>
+        </div>
+        <input id="order-name" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-default">주소</span>
+        </div>
+        <input id="order-address" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-default">연락처</span>
+        </div>
+        <input id="order-phone" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+    </div>
+
+    <div class="button_display input_pad">
+        <button type="button" onclick="order()" class="btn btn-primary btn-order">주문하기</button>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">사이즈</th>
+            <th scope="col">이름</th>
+            <th scope="col">주소</th>
+            <th scope="col">연락처</th>
+        </tr>
+        </thead>
+        <tbody id="orders-box">
+        </tbody>
+</table>
+
+    </div>
+</body>
+
+</html>
